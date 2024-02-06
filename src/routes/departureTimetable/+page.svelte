@@ -1,7 +1,7 @@
 <script>
 	import { Button } from 'flowbite-svelte';
 	import TrainTimes from './trainTimes.svelte';
-	import Weather from './Weather.svelte';
+	import Weather from './weather.svelte';
 	import StandardTime from './StandardTime.svelte';
   </script>
   
