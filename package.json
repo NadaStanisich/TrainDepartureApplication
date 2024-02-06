@@ -1,0 +1,32 @@
+{
+	"name": "traindepartureapp",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "prettier --check .",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^2.1.1",
+		"@sveltejs/kit": "^1.27.4",
+		"autoprefixer": "^10.4.14",
+		"dotenv": "^16.3.1",
+		"flowbite": "^2.2.1",
+		"flowbite-svelte": "^0.44.22",
+		"postcss": "^8.4.24",
+		"postcss-load-config": "^4.0.1",
+		"prettier": "^3.0.0",
+		"prettier-plugin-tailwindcss": "^0.4.1",
+		"svelte": "^4.2.7",
+		"tailwindcss": "^3.3.2",
+		"vite": "^4.4.2"
+	},
+	"type": "module",
+	"dependencies": {
+		"@supabase/supabase-js": "^2.39.3",
+		"flowbite-svelte-icons": "^1.2.1"
+	}
+}
