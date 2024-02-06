@@ -1,8 +1,9 @@
 <script>
 	import { Button } from 'flowbite-svelte';
 	import TrainTimes from './trainTimes.svelte';
-	import Weather from './Weather.svelte';
 	import StandardTime from './StandardTime.svelte';
+	import Weather from './Weather.svelte';
+
   </script>
   
   <div class="container">
@@ -12,6 +13,8 @@
 	  </div>
 	  <div class="top-right">
 		<Button class="logout-button"><a href="/logout">Logout</a></Button>
+		import Weather from './Weather.svelte';
+
 		<Weather />
 	  </div>
 	</div>
