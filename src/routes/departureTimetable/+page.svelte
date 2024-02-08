@@ -19,7 +19,7 @@
 	</div>
 	
   
-	<div class="main-content" style="background-color: blue; color: white;">
+	<div class="main-content">
 		<TrainTimes />
 	</div>
   
