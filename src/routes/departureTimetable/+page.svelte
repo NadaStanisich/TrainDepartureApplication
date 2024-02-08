@@ -19,8 +19,8 @@
 	</div>
 	
   
-	<div class="main-content">
-	  <TrainTimes />
+	<div class="main-content" style="background-color: blue; color: white;">
+		<TrainTimes />
 	</div>
   
 	<div class="footer">

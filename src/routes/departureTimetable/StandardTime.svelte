@@ -21,8 +21,7 @@
   </script>
   
   <div>
-    
-    <p>{currentTime.toLocaleTimeString()}</p>
+    <p>{currentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</p> 
   </div>
 
   
