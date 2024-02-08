@@ -5,17 +5,34 @@
   
 	let email = '';
 	let password = '';
+	let loginError = false;
   
 	async function signInWithEmail() {
 	  const { data, error } = await supabase.auth.signInWithPassword({
 		email: email,
 		password: password
 	  });
-	  if (data) {
+	  if (data.user) {
+		loginError = false;
 		goto('/departureTimetable');
 		console.log(data);
-	  } else error;
-	  console.log(error);
+	  } else if(error) {
+	  	console.log(error);
+		loginError = true;
+	  }
+	}
+
+	async function gitHubSignIn() {
+		const { data, error } = await supabase.auth.signInWithOAuth({
+			provider: 'github'
+		});
+		if (data) {
+			loginError = false;
+			goto('/departureTimetable');
+		} else if(error) {
+			console.log(error);
+			loginError = true;
+		}
 	}
 </script>
 
@@ -37,7 +54,7 @@
 
 		<div class="mt-6 flex justify-center">
 			<Button class="mr-1 bg-white text-blue-500" type="submit">Log in</Button>
-			<Button class="bg-white text-blue-500" type="submit">Sign In With GitHub</Button>
+			<Button class="bg-white text-blue-500" on:click={gitHubSignIn}>Sign In With GitHub</Button>
 		</div>
 
 		<div class="mt-6 text-sm text-white">
@@ -47,4 +64,8 @@
 			<a href="/" class="text-white underline">Forgot your password?</a>
 		</div>
 	</form>
+
+	{#if loginError}
+		<p class="text-center text-white mt-4">Invalid email or password</p>
+	{/if}
 </div>
