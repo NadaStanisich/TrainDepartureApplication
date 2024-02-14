@@ -16,7 +16,7 @@
 		"autoprefixer": "^10.4.14",
 		"dotenv": "^16.3.1",
 		"flowbite": "^2.2.1",
-		"flowbite-svelte": "^0.44.22",
+		"flowbite-svelte": "^0.44.23",
 		"postcss": "^8.4.24",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^3.0.0",
