@@ -2,7 +2,7 @@
 	import '../app.pcss';
 
 	const dev = import.meta.env.VITE_APP_ENV === 'development';
-	console.log('dev', dev);
+	//console.log('dev', dev);
 
 </script>
 

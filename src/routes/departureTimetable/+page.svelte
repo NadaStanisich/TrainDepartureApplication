@@ -1,8 +1,14 @@
 <script>
 	import { Button } from 'flowbite-svelte';
+	import { goto } from '$app/navigation'; // Import goto for navigation
 	import TrainTimes from './trainTimes.svelte';
 	import StandardTime from './StandardTime.svelte';
 	import WeatherComponent from './WeatherComponent.svelte';
+
+	function goToChangeDetailsPage() {
+        goto('/changeDetails'); // Redirect to the changeDetails page
+    }
+	//import ChangeDetails from '../newDetails/changeDetails.svelte'; // Import the ChangeDetails component
 
   </script>
   
@@ -24,10 +30,12 @@
 	</div>
   
 	<div class="footer">
-	  <!-- Your train times component goes here -->
 	</div>
   </div>
-  
+
+  <div class="text-right mt-4">
+	<Button on:click={goToChangeDetailsPage}>Change Details</Button>
+  </div>
 
   <style>
 	/* Add your styling here */
