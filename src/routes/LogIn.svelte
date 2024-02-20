@@ -50,11 +50,11 @@
 	}
 </script>
 
-<div class="text-center py-11 bg-blue-500 text-white">
+<div class="text-center py-11  text-white">
 	<h1 class="text-4xl font-bold">Train Departure App</h1>
 </div>
 
-<div class="bg-blue-400">
+<div class="bg">
 	<form on:submit|preventDefault={signInWithEmail} class="w-96 mx-auto p-6 rounded-lg shadow-md">
 		<div class="mb-4">
 			<Label for="email" class="text-white">Email</Label>
