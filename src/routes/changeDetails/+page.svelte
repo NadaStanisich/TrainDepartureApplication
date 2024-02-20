@@ -49,7 +49,7 @@
 
         <div class="mt-14 flex justify-center">
             <Button class="mr-1" type="submit">Update Details</Button>
-            <Button><a href="/">Cancel</a></Button> 
+            <Button><a href="/departureTimetable">Cancel</a></Button> 
         </div>
     </form>
 </div>

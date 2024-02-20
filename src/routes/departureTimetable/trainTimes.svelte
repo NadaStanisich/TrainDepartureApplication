@@ -11,6 +11,8 @@
 		TableHeadCell
 	} from 'flowbite-svelte';
 
+
+
 	import { ChevronDownSolid } from 'flowbite-svelte-icons';
 
 	import { onMount, afterUpdate } from "svelte";
@@ -26,6 +28,7 @@
 	let departureData: TrainDeparture[] = [];
 	let directionData: TrainDirections[] = [];
 	let departuresData: Departures | undefined = undefined;
+  
 
   function selectItem(item) {
 		selected = item.stop_name; // Update button name
@@ -261,12 +264,13 @@
 
 <main>
   <Button class="bg-blue-500 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
-  <Dropdown>
+  <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
     {#each stopData as stop (stop.stop_id)}
       <DropdownItem on:click={() => selectItem(stop)}>{stop.stop_name}</DropdownItem>
     {/each}
   </Dropdown>
 
+  
   {#if departuresData != undefined && departuresData.departures != undefined}
     <Table striped={true}>
       <TableHead>
@@ -309,3 +313,7 @@
     </Table>
   {/if}
 </main>
+<style>
+
+
+</style>

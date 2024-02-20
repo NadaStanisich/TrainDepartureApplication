@@ -17,8 +17,8 @@
 	  <div class="large-font">
 		<StandardTime />
 	  </div>
-	  <div class="top-right">
-		<Button class="logout-button"><a href="/logout">Logout</a></Button>
+	  <div class="top-left">
+	
 
 		<WeatherComponent />
 	  </div>
@@ -35,6 +35,7 @@
 
   <div class="text-right mt-4">
 	<Button on:click={goToChangeDetailsPage}>Change Details</Button>
+	<Button class="logout-button"><a href="/logout">Logout</a></Button>
   </div>
 
   <style>
@@ -42,13 +43,13 @@
 	.container {
 	  display: flex;
 	  flex-direction: column;
-	  height: 100vh;
+	  height: 5vh;
 	  padding: 20px;
 	}
   
 	.header {
 	  display: flex;
-	  justify-content: space-between;
+	  
 	  align-items: center;
 	  margin-bottom: 20px;
 	}
@@ -68,12 +69,9 @@
 	  font-size: 115px; /* Adjust the font size as needed */
 	}
   
-	.logout-button {
-	  background-color: #3498db; /* Use your desired background color */
-	  color: white;
-	}
+
   
-	.top-right {
+	.top-left {
 	  align-self: flex-end;
 	  display: flex;
 	  flex-direction: column;

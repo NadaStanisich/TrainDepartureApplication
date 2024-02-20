@@ -7,7 +7,11 @@
 </script>
 
 <main style={dev ? 'border-top: 9px solid red;' : ``}>
-	<div class="h-screen bg-blue-400">	
 		<slot />
-	</div>
+<style>
+	body{
+		background-color: lightblue;
+	}
+</style>
+	
 </main>
