@@ -9,6 +9,9 @@
     };
   
     // Set up interval to update time
+    /**
+	 * @type {string | number | NodeJS.Timeout | undefined}
+	 */
     let interval;
     onMount(() => {
       interval = setInterval(updateCurrentTime, 1000);
