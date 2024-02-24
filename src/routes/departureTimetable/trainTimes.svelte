@@ -11,8 +11,6 @@
 		TableHeadCell
 	} from 'flowbite-svelte';
 
-
-
 	import { ChevronDownSolid } from 'flowbite-svelte-icons';
 
 	import { onMount, afterUpdate } from "svelte";
@@ -163,7 +161,7 @@
 </script>
 
 <main>
-  <Button class="bg-blue-500 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
+  <Button class="bg-blue-600 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
   <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
     {#each stopData as stop (stop.stop_id)}
       <DropdownItem on:click={() => selectItem(stop)}>{stop.stop_name}</DropdownItem>
