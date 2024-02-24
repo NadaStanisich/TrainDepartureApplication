@@ -12,7 +12,7 @@
     async function signUpNewUser() {
       try {
         // Sign up the user
-        const { user: newUser, error } = await supabase.auth.signUp({ // <= Not sure if this is the correct way to sign up a user?
+        const { user: newUser, error } = await supabase.auth.signUp({ // <= Not sure if this is the correct way to sign up a user - will not let me use 'data'?
           email: email,
           password: password,
         });
