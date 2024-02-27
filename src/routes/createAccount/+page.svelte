@@ -1,43 +1,53 @@
-<script>
-	import { Label, Input, Button, Select } from 'flowbite-svelte';
+<script lang="ts">
+    import { Label, Input, Button, Select } from 'flowbite-svelte';
     import { supabase } from '$lib/supabase.js';
-
+    import { goto } from '$app/navigation';
+    import { user } from '$lib/user';
+  
     let name = '';
     let email = '';
     let password = '';
-	let backgroundColour = 'default'; // Default background color
-
+    let backgroundColour = '#3B82F6'; //'bg-blue-400';  Set default background color to blue
+  
     async function signUpNewUser() {
+      try {
         // Sign up the user
-        const { user, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
+        const { user: newUser, error } = await supabase.auth.signUp({ // <= Not sure if this is the correct way to sign up a user - will not let me use 'data'?
+          email: email,
+          password: password,
         });
-
-        // If there's no error signing up the user
-        if (!error && user) {
-            // Insert user details into Supabase table
-            const { data, error } = await supabase
-                .from('users')
-                .insert([
-                    {
-                        name: name,
-                        email: email,
-                        background_colour: backgroundColour,
-                    },
-                ]);
-
-            if (error) {
-                console.error('Error inserting user details:', error.message);
-            } else {
-                console.log('User details inserted successfully:', data);
-                // Redirect the user to the dashboard or another page
-            }
-        } else {
-            console.error('Error signing up the user:', error ? error.message : 'Unknown error');
+  
+        // If error signing up user log the error and return
+        if (error) {
+          console.error('Error signing up the user:', error.message);
+          return;
         }
+  
+        // Insert user details into Supabase table
+        const { data, error: insertError } = await supabase
+          .from('user')
+          .insert([
+            {
+              name: name,
+              email: email,
+              background_colour: backgroundColour,
+            },
+          ]);
+  
+        if (insertError) {
+          console.error('Error inserting user details:', insertError.message);
+        } else {
+          console.log('User details inserted successfully:', data);
+          // Update the user store
+          user.set(newUser);
+          // Redirect the user to the dashboard or another page
+          goto('/departureTimetable');
+        }
+      } catch (error) {
+        console.error('Unknown error:', error.message);
+      }
     }
-</script>
+  </script>
 
 <div class="text-center py-11">
 	<h1>Create Account</h1>
@@ -63,18 +73,16 @@
 		<div class="mb-4">
             <Label for="background-colour">Background Colour</Label>
             <Select id="background-colour" bind:value={backgroundColour}>
-                <option value="default">Default</option>
-                <option value="red">Red</option>
-                <option value="blue">Blue</option>
-                <option value="green">Green</option>
-                <!-- Add more colour options as needed -->
+                <option value="#3B82F6">Default (Blue)</option>
+                <option value=" #DC2626">Red</option>
+                <option value="#10B981">Green</option>
+                <!-- More colour options to be added -->
             </Select>
         </div>
 
 		<div class="mt-14 flex justify-center">
 			<Button class="mr-1" type="submit">Submit</Button>
-
-			<Button><a href="/">Cancel</Button>
+			<Button><a href="/">Cancel</a></Button>
 		</div>
 	</form>
 </div>

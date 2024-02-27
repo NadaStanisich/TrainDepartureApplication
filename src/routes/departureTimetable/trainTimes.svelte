@@ -20,6 +20,7 @@
   import { TrainDirections } from "$lib/traindirections";
 
   let selected = 'Select Train Station'; // Initial button name
+
   let selectedStation: Trainstop | null = null;
   let trainRoute: Train[] = [];
   let stopData: Trainstop[] = [];
@@ -54,7 +55,12 @@
         );
       } else {
         throw new Error(`Failed to fetch train data: ${trainResponse.statusText}`);
+
       }
+    } catch (error) {
+      console.error("Error fetching train data:", error);
+    }
+  }
 
       // Fetch stops data
       const stopsResponse = await fetch(
@@ -83,9 +89,17 @@
         );
       } else {
         throw new Error(`Failed to fetch stops data: ${stopsResponse.statusText}`);
-      }
 
+      }
+    } catch (error) {
+      console.error("Error fetching stops data:", error);
+    }
+  }
+
+  async function fetchNextTrains() {
+    try {
       if (selectedStation) {
+        
         // Fetch train departure data
         const departureResponse = await fetch(
           `https://ptvapiwrapper.azurewebsites.net/trains/get-departures/${selectedStation.stop_id}`,
@@ -153,17 +167,20 @@
           );
         }
       } //  if (selectedStation)
+
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching next trains:", error);
     }
   }
 
   onMount(() => {
+
     fetchData();
+
     const lastSelectedStation = localStorage.getItem('selectedStation');
     if (lastSelectedStation) {
       selectedStation = JSON.parse(lastSelectedStation);
-      selected = selectedStation.stop_name;
+      selected = selectedStation?.stop_name ?? 'Select Train Station';
     }
   });
 
@@ -213,6 +230,7 @@
   }
 
   function getRouteName(route_id) {
+
     const route = trainRoute.find(route => route.route_id === route_id);
     return route ? route.route_name : '';
   }
@@ -220,7 +238,7 @@
   function organizeDeparturesByRoute(routeId: number) {
     const currentTimestamp = new Date().getTime();
     return (
-      departuresData?.departures
+      (departuresData?.departures ?? [])
         .filter(
           (departure) =>
             departure.route_id === routeId &&
@@ -273,7 +291,7 @@
 </script>
 
 <main>
-  <Button class="bg-blue-500 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
+  <Button class="bg-blue-600 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
   <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
     <div slot="header" class="p-3">
       <form on:submit={handleSubmit}>
@@ -301,7 +319,7 @@
         {/each}
       </TableHead>
       <TableBody>
-        {#each trainRoute.filter(route => departuresData?.departures.some(departure => departure.route_id === route.route_id)) as route}
+        {#each trainRoute.filter(route => (departuresData?.departures ?? []).some(departure => departure.route_id === route.route_id)) as route}
           <TableBodyRow>
             <TableBodyCell style="background-color: lightgrey; color: black;">{getRouteName(route.route_id)}</TableBodyCell>
             {#each organizeDeparturesByRoute(route.route_id) as departure}
