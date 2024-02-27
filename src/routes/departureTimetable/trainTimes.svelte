@@ -269,7 +269,7 @@
     } else {
       // Handle multiple search results or no results
     }
-  }
+  }// some changes here
 </script>
 
 <main>
