@@ -51,7 +51,7 @@
         }
       }
     } catch (error) {
-      console.error('Unknown error:', error.message);
+      console.error('Unknown error:', (error as Error).message);
     }
   }
 </script>
