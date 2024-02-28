@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Label, Input, Button, Select } from 'flowbite-svelte';
     import { supabase } from '$lib/supabase.js';
-    import { user } from '$lib/user';
+    //import { user } from '$lib/user';
+    import { selectedColour } from '$lib/colour.js'; 
     import { goto } from '$app/navigation'; // Import goto for navigation
 
     let name = ''; // New name
@@ -10,11 +11,11 @@
     
     async function updateUserDetails() {
     const { error } = await supabase
-        .from('user')
+        .from('users')
         .update({
             name: name,
             email: email,
-            background_colour: backgroundColour,
+            bg_colour: backgroundColour,
         })
         .eq('email', email); // Using'email' as a unique identifier for the user
 
@@ -22,6 +23,10 @@
         console.error('Error updating user details:', error.message);
     } else {
         console.log('User details updated successfully.');
+
+        // Update selectedColour store with the new background colour
+        selectedColour.set(backgroundColour);
+
         // Redirect to trainTimes page
         goto('/departureTimetable');
     }
@@ -44,8 +49,8 @@
         </div>
 
         <div class="mb-4">
-            <Label for="background-colour">Background Colour</Label>
-            <Select id="background-colour" bind:value={backgroundColour}>
+            <Label for="backgroundColour">Background Colour</Label>
+            <Select id="backgroundColour" bind:value={backgroundColour}>
                 <option value="bg-blue-400">Default (Blue)</option>
                 <option value="bg-red-400">Red</option>
                 <option value="bg-green-400">Green</option>
