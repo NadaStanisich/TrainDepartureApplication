@@ -24,6 +24,7 @@
   let departureData: TrainDeparture[] = [];
   let directionData: TrainDirections[] = [];
   let departuresData: Departures | undefined = undefined;
+  
   function selectItem(item) {
     selected = item.stop_name; // Update button name
     selectedStation = item;

@@ -1,53 +1,53 @@
 <script>
-	import { Label, Input, Button } from 'flowbite-svelte';
-	import { supabase } from '$lib/supabase.js';
-	import { goto } from '$app/navigation';
+    import { Label, Input, Button } from 'flowbite-svelte';
+    import { supabase } from '$lib/supabase.js';
+    import { goto } from '$app/navigation';
   
-	let email = '';
-	let password = '';
-	let loginError = false;
+    let email = '';
+    let password = '';
+    let loginError = false;
   
-	async function signInWithEmail() {
-	  const { data, error } = await supabase.auth.signInWithPassword({
-		email: email,
-		password: password
-	  });
-	  if (data.user) {
-		loginError = false;
-		
-		// Fetch user profile after successful login
-		const { data: profileData, error: profileError } = await supabase
-        .from('users')
-        .select('name, email, trainstation, background_colour') 
-        .eq('email', email)
-        .single();	
-		if (profileData) {
-			console.log(profileData);
-			localStorage.setItem('user', JSON.stringify(profileData));
-		} else if(profileError) {
-			console.log(profileError);
-		}
+    async function signInWithEmail() {
+        const { user, error } = await supabase.auth.signInWithOAuth({
+            email: email,
+            password: password
+        });
+        if (user) {
+            loginError = false;
+            
+            // Fetch user profile after successful login
+            const { data: profileData, error: profileError } = await supabase
+                .from('users')
+                .select('name, email, trainstation, bg_colour') 
+                .eq('id', user.id) // Using user.id here
+                .single();  
+            if (profileData) {
+                console.log(profileData);
+                localStorage.setItem('user', JSON.stringify(profileData));
+            } else if(profileError) {
+                console.log(profileError);
+            }
 
-		goto('/departureTimetable');
-		console.log(data);
-	  } else if(error) {
-	  	console.log(error);
-		loginError = true;
-	  }
-	}
+            goto('/departureTimetable');
+            console.log(user);
+        } else if(error) {
+            console.log(error);
+            loginError = true;
+        }
+    }
 
-	async function gitHubSignIn() {
-		const { data, error } = await supabase.auth.signInWithOAuth({
-			provider: 'github'
-		});
-		if (data) {
-			loginError = false;
-			goto('/departureTimetable');
-		} else if(error) {
-			console.log(error);
-			loginError = true;
-		}
-	}
+    async function gitHubSignIn() {
+        const { user, error } = await supabase.auth.signInWithOAuth({
+            provider: 'github'
+        });
+        if (user) {
+            loginError = false;
+            goto('/departureTimetable');
+        } else if(error) {
+            console.log(error);
+            loginError = true;
+        }
+    }
 </script>
 
 <div class="text-center py-11  text-white">
