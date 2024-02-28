@@ -32,7 +32,7 @@
     selectedStation = item;
     fetchNextTrains(); // Fetch next trains when a new station is selected
   }
-  
+
   async function fetchData() {
     try {
       // Fetch train data
@@ -171,6 +171,7 @@
       //fetchData();
     }
   }
+
   async function fetchNextTrains() {
     try {
       if (selectedStation) {
@@ -259,50 +260,56 @@
   }
 
 </script>
-  <main>
-    <Button class="bg-blue-600 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
-    <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
-      <div slot="header" class="p-3">
-        <form on:submit={handleSubmit}>
-          <Search size="md" bind:value={searchInput} on:keyup={searchStops}/>
-        </form>
-      </div>
-      {#each stopsToDisplay as stop (stop.stop_id)}
-        <DropdownItem on:click={() => selectItem(stop)}>{stop.stop_name}</DropdownItem>
-      {/each}
-    </Dropdown>
-  {#if departuresData != undefined && departuresData.departures != undefined}
-    <Table striped={true}>
-      <TableHead>
-        <TableHeadCell style="background-color: darkgrey; color: white;">
-          <div>Destination/</div>
-          <div>Route</div>
-        </TableHeadCell>
-        {#each new Array(4) as _, index}
+<main>
+  <Button class="bg-blue-600 text-white sizes" size="lg">
+    {selected}
+    <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
+  </Button>
+
+  <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
+    <div slot="header" class="p-3">
+      <form on:submit={handleSubmit}>
+        <Search size="md" bind:value={searchInput} on:keyup={searchStops}/>
+      </form>
+    </div>
+    {#each stopsToDisplay as stop (stop.stop_id)}
+      <DropdownItem on:click={() => selectItem(stop)}>{stop.stop_name}</DropdownItem>
+    {/each}
+  </Dropdown>
+  
+    {#if departuresData != undefined && departuresData.departures != undefined}
+      <Table striped={true}>
+        <TableHead>
           <TableHeadCell style="background-color: darkgrey; color: white;">
-            <div>Departing</div>
-            <div>Platform</div>
+            <div>Destination/</div>
+            <div>Route</div>
           </TableHeadCell>
-        {/each}
-      </TableHead>
-      <TableBody>
-        {#each trainRoute.filter(route => (departuresData?.departures ?? []).some(departure => departure.route_id === route.route_id)) as route}
-          <TableBodyRow>
-            <TableBodyCell style="background-color: lightgrey; color: black;">{getRouteName(route.route_id)}</TableBodyCell>
-            {#each organizeDeparturesByRoute(route.route_id) as departure}
-              <TableBodyCell style="background-color: lightyellow;">
-                <div>
-                  <div>{departureTimeWithMinutesLeft(new Date(departure.scheduled_departure_utc))}</div>
-                  <div>Platform {departure.platform_number}</div>
-                </div>
-              </TableBodyCell>
-            {/each}
-          </TableBodyRow>
-        {/each}
-      </TableBody>
-    </Table>
-  {/if}
+    {#each new Array(4) as _, index}
+        <TableHeadCell style="background-color: darkgrey; color: white;">
+          <div>Departing</div>
+          <div>Platform</div>
+        </TableHeadCell>
+    {/each}
+        </TableHead>
+    <TableBody>
+      {#each trainRoute.filter(route => (departuresData?.departures ?? []).some(departure => departure.route_id === route.route_id)) as route}
+        <TableBodyRow>
+          <TableBodyCell style="background-color: lightgrey; color: black;">{getRouteName(route.route_id)}</TableBodyCell>
+          {#each organizeDeparturesByRoute(route.route_id) as departure}
+            <TableBodyCell style="background-color: lightyellow;">
+              <div>
+                <div>{departureTimeWithMinutesLeft(new Date(departure.scheduled_departure_utc))}</div>
+                <div>Platform {departure.platform_number}</div>
+              </div>
+            </TableBodyCell>
+          {/each}
+        </TableBodyRow>
+      {/each}
+    </TableBody>
+  </Table>
+{/if}
 </main>
+
 <style>
   /* Add your styles here if needed */
 </style>
