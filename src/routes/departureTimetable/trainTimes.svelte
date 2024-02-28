@@ -11,12 +11,14 @@
     TableHead,
     TableHeadCell
   } from 'flowbite-svelte';
+
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import { onMount, afterUpdate } from "svelte";
   import { Train } from "$lib/train";
   import { Trainstop } from "$lib/trainstop";
   import { TrainDeparture, Departures } from "$lib/traindeparture";
   import { TrainDirections } from "$lib/traindirections";
+
   let selected = 'Select Train Station'; // Initial button name
   let selectedStation: Trainstop | null = null;
   let trainRoute: Train[] = [];
@@ -25,11 +27,12 @@
   let directionData: TrainDirections[] = [];
   let departuresData: Departures | undefined = undefined;
   
-  function selectItem(item) {
+  function selectItem(item: Trainstop) {
     selected = item.stop_name; // Update button name
     selectedStation = item;
     fetchNextTrains(); // Fetch next trains when a new station is selected
   }
+  
   async function fetchData() {
     try {
       // Fetch train data
@@ -146,14 +149,16 @@
       console.error(error);
     }
   }
+
   onMount(() => {
     fetchData();
     const lastSelectedStation = localStorage.getItem('selectedStation');
     if (lastSelectedStation) {
       selectedStation = JSON.parse(lastSelectedStation);
-      selected = selectedStation.stop_name;
+      selected = selectedStation?.stop_name ?? 'Select Train Station';
     }
   });
+
   afterUpdate(() => {
     if (selectedStation) {
       localStorage.setItem('selectedStation', JSON.stringify(selectedStation));
@@ -195,14 +200,16 @@
       console.error(error);
     }
   }
-  function getRouteName(route_id) {
+
+  function getRouteName(route_id: number) {
     const route = trainRoute.find(route => route.route_id === route_id);
     return route ? route.route_name : '';
   }
+  
   function organizeDeparturesByRoute(routeId: number) {
     const currentTimestamp = new Date().getTime();
     return (
-      departuresData?.departures
+      (departuresData?.departures ?? [])
         .filter(
           (departure) =>
             departure.route_id === routeId &&
@@ -216,6 +223,7 @@
         .slice(0, 4) || []
     );
   }
+
   function departureTimeWithMinutesLeft(departureTime: Date) {
     const scheduledTime: Date = new Date(departureTime);
     const currentTime: Date = new Date();
@@ -224,8 +232,11 @@
     const diffInMinutes = Math.ceil(diffInMilliseconds / (1000 * 60)); // Convert milliseconds to minutes
     return `${diffInMinutes} min`;
   }
+
+
   let searchInput = '';
   let stopsToDisplay = stopData;
+
   function searchStops() {
     console.log(searchInput)
     let results =  stopData.filter(stop =>
@@ -234,7 +245,8 @@
     stopsToDisplay = results;
     return results;
   }
-  function handleSubmit(event) {
+
+  function handleSubmit(event: any) {
     event.preventDefault();
     const searchResults = searchStops();
     console.log(searchResults)
@@ -245,6 +257,7 @@
       // Handle multiple search results or no results
     }
   }
+
 </script>
   <main>
     <Button class="bg-blue-600 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
@@ -273,7 +286,7 @@
         {/each}
       </TableHead>
       <TableBody>
-        {#each trainRoute.filter(route => departuresData?.departures.some(departure => departure.route_id === route.route_id)) as route}
+        {#each trainRoute.filter(route => (departuresData?.departures ?? []).some(departure => departure.route_id === route.route_id)) as route}
           <TableBodyRow>
             <TableBodyCell style="background-color: lightgrey; color: black;">{getRouteName(route.route_id)}</TableBodyCell>
             {#each organizeDeparturesByRoute(route.route_id) as departure}
