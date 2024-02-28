@@ -8,28 +8,28 @@
     let loginError = false;
   
     async function signInWithEmail() {
-        const { user, error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
         });
-        if (user) {
+        if (data) {
             loginError = false;
             
             // Fetch user profile after successful login
             const { data: profileData, error: profileError } = await supabase
                 .from('users')
                 .select('name, email, trainstation, bg_colour') 
-                .eq('id', user.id) // Using user.id here
+                .eq('email', email)// <= need to use 'id'(uuid) instead?>
                 .single();  
             if (profileData) {
                 console.log(profileData);
-                localStorage.setItem('user', JSON.stringify(profileData));
+                localStorage.setItem('users', JSON.stringify(profileData));
             } else if(profileError) {
                 console.log(profileError);
             }
 
             goto('/departureTimetable');
-            console.log(user);
+            console.log(data);
         } else if(error) {
             console.log(error);
             loginError = true;
@@ -37,10 +37,10 @@
     }
 
     async function gitHubSignIn() {
-        const { user, error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'github'
         });
-        if (user) {
+        if (data) {
             loginError = false;
             goto('/departureTimetable');
         } else if(error) {
