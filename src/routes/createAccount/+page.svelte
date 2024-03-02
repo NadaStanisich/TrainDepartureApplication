@@ -79,12 +79,12 @@
 
   <div class="mb-4">
           <Label for="background-colour">Background Colour</Label>
-          <Select id="background-colour" bind:value={backgroundColour}>
-              <option value="#3B82F6">Default (Blue)</option>
-              <option value="#DC2626">Red</option>
-              <option value="#10B981">Green</option>
-              <!-- More colour options to be added -->
-          </Select>
+          <Select id="backgroundColour" bind:value={backgroundColour}>
+            <option value="blue">Default (Blue)</option>
+            <option value="red">Red</option>
+            <option value="green">Green</option>
+            <!-- More colour options to be added -->
+        </Select>
       </div>
 
   <div class="mt-14 flex justify-center">
