@@ -18,7 +18,7 @@
 		// Fetch user profile after successful login
 		const { data: profileData, error: profileError } = await supabase
         .from('users')
-        .select('name, email, trainstation, background_colour') 
+        .select('name, email, trainstation, background_colour, train_departure') 
         .eq('email', email)
         .single();	
 		if (profileData) {
@@ -48,6 +48,7 @@
 			loginError = true;
 		}
 	}
+	
 </script>
 
 <div class="text-center py-11  text-white">
