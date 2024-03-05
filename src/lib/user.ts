@@ -6,7 +6,7 @@ interface User {
     name: string;
     email: string;
     trainstation: string
-    background_colour: string;
+    bg_colour: string;
 
 }
 // Still working on this part

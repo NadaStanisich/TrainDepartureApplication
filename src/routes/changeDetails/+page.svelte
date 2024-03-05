@@ -1,20 +1,20 @@
 <script lang="ts">
     import { Label, Input, Button, Select } from 'flowbite-svelte';
     import { supabase } from '$lib/supabase.js';
-    import { user } from '$lib/user';
+    import { selectedColour } from '$lib/colour.js'; 
     import { goto } from '$app/navigation'; // Import goto for navigation
 
     let name = ''; // New name
     let email = ''; // New email address
-    let backgroundColour = '#3B82F6'; //'bg-blue-400'; Set default background color to blue
+    let backgroundColour = 'blue'; //'bg-blue-400'; Set default background color to blue
     
     async function updateUserDetails() {
     const { error } = await supabase
-        .from('user')
+        .from('users')
         .update({
             name: name,
             email: email,
-            background_colour: backgroundColour,
+            bg_colour: backgroundColour,
         })
         .eq('email', email); // Using'email' as a unique identifier for the user
 
@@ -22,6 +22,10 @@
         console.error('Error updating user details:', error.message);
     } else {
         console.log('User details updated successfully.');
+
+        // Update selectedColour store with the new background colour
+        selectedColour.set(backgroundColour);
+
         // Redirect to trainTimes page
         goto('/departureTimetable');
     }
@@ -35,20 +39,21 @@
 
         <div class="mb-4">
             <Label for="name">Name</Label>
-            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder="New Name" />
+            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder={name = (JSON.parse(localStorage.getItem('users'))?.name || '')} />
+            <!--   Name is set to the current name of the user  -->
         </div>
 
         <div class="mb-4">
-            <Label for="email">Email</Label>
-            <Input class="mb-3" id="email" type="email" bind:value={email} placeholder="New Email" />
+            <Label for="email">Email</Label>              
+            <Input class="mb-3" id="email" type="email" bind:value={email} placeholder={email = (JSON.parse(localStorage.getItem('users'))?.email || '')} />
+    <!--   Email is set to the current email address of the user  -->
         </div>
-
         <div class="mb-4">
-            <Label for="background-colour">Background Colour</Label>
-            <Select id="background-colour" bind:value={backgroundColour}>
-                <option value="bg-blue-400">Default (Blue)</option>
-                <option value="bg-red-400">Red</option>
-                <option value="bg-green-400">Green</option>
+            <Label for="backgroundColour">Background Colour</Label>
+            <Select id="backgroundColour" bind:value={backgroundColour}>
+                <option value="blue">Default (Blue)</option>
+                <option value="red">Red</option>
+                <option value="green">Green</option>
                 <!-- More colour options to be added -->
             </Select>
         </div>

@@ -1,11 +1,8 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { selectedColour } from '$lib/colour.js';
-
+   
 	const dev = import.meta.env.VITE_APP_ENV === 'development';
 	//console.log('dev', dev);
-
-	//console.log('selectedColour', selectedColour);
 	// Cannot use selectedColour directly in the style attribute as it is a `reactive variable`?
 	
 </script>
@@ -14,8 +11,12 @@
 		<slot />
 <style>
 	body{
+		
+		/* assign blue as the background color */
+		/* create a variable to store the background color */
 		background-color: #3B82F6; 
-	}
+		
+	}	
 </style>
 	
 </main>
