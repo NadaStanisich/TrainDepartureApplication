@@ -36,18 +36,19 @@
         }
     }
 
-    async function gitHubSignIn() {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'github'
-        });
-        if (data) {
-            loginError = false;
-            goto('/departureTimetable');
-        } else if(error) {
-            console.log(error);
-            loginError = true;
-        }
-    }
+	async function gitHubSignIn() {
+		const { data, error } = await supabase.auth.signInWithOAuth({
+			provider: 'github'
+		});
+		if (data) {
+			loginError = false;
+			goto('/departureTimetable');
+		} else if(error) {
+			console.log(error);
+			loginError = true;
+		}
+	}
+	
 </script>
 
 <div class="text-center py-11  text-white">
