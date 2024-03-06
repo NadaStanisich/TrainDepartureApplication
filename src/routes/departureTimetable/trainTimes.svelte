@@ -1,48 +1,74 @@
 <script lang="ts">
-	import {
-		Button,
-		Dropdown, 
-		DropdownItem,
-		Table,
-		TableBody,
-		TableBodyCell,
-		TableBodyRow,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte';
+  import {
+    Button,
+    Dropdown,
+    DropdownItem,
+    Search,
+    Table,
+    TableBody,
+    TableBodyCell,
+    TableBodyRow,
+    TableHead,
+    TableHeadCell
+  } from 'flowbite-svelte';
+  
+  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { onMount } from "svelte";
+  import { Train } from "$lib/train";
+  import { Trainstop } from "$lib/trainstop";
+  import type { TrainDeparture, Departures } from "$lib/traindeparture";
+  import type { TrainDirections } from "$lib/traindirections";
+  import { supabase } from '$lib/supabase.js';
+  import { goto } from '$app/navigation'; // Import goto for navigation
 
-
-
-	import { ChevronDownSolid } from 'flowbite-svelte-icons';
-
-	import { onMount, afterUpdate } from "svelte";
-	import { Train } from "$lib/train";
-	import { Trainstop } from "$lib/trainstop";
-	import type { TrainDeparture, Departures } from "$lib/traindeparture";
-	import type { TrainDirections } from "$lib/traindirections";
-
-	let selected = 'Select Train Station'; // Initial button name
+  let selected = 'Select Train Station'; // Initial button name
   let selectedStation: Trainstop | null = null;
-	let trainRoute: Train[] = [];
-	let stopData: Trainstop[] = [];
-	let departureData: TrainDeparture[] = [];
-	let directionData: TrainDirections[] = [];
-	let departuresData: Departures | undefined = undefined;
+  let trainRoute: Train[] = [];
+  let stopData: Trainstop[] = [];
+  let departureData: TrainDeparture[] = [];
+  let directionData: TrainDirections[] = [];
+  let departuresData: Departures | undefined = undefined;
+  let  trainstation ='';
+  let email='';
   
 
-  async function fetchData(url: string, options: any) {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch data: ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
+  async function updateUserDetails(users: any) {
+    const { data,  error } = await supabase
+        .from('users')
+        .update({
+            trainstation: "trainstation",
 
+        })
+        .eq('email', 'breakingbad@gmail.com') // Add a WHERE clause to specify the user ID
+        .select();
+        
+
+
+    if(data) {
+        console.log("data: ", data)
+    } else {
+        console.log("no data")
+    }
+    if (error) {
+        console.error('Error updating user details:', error.message);
+    } else {
+        console.log('User details updated successfully.');
+
+        // Redirect to trainTimes page
+        goto('/departureTimetable');
+    }
+}
+
+
+
+
+  function selectItem(item: Trainstop) {
+    selected = item.stop_name; // Update button name
+    selectedStation = item;
+    fetchNextTrains(); // Fetch next trains when a new station is selected
+    updateUserDetails("breakingbad@gmail.com")
+  }
+  
   function getFetchOptions() {
     return {
       method: "GET",
@@ -52,85 +78,78 @@
       },
     };
   }
-
-  function selectItem(item: Trainstop) {
-    selected = item.stop_name;
-    selectedStation = item;
-    fetchNextTrains();
-  }
-
-  async function fetchTrainData() {
+  
+  async function fetchData(url: string) {
     try {
-      const trainUrl = "https://ptvapiwrapper.azurewebsites.net/trains/get-all-routes";
-      const options = getFetchOptions();
-      const responseData = await fetchData(trainUrl, options);
-      if (responseData) {
-        trainRoute = responseData.map((item: any) => new Train(item.route_type, item.route_id, item.route_name));
+      const response = await fetch(url, getFetchOptions());
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
       }
+      return await response.json();
     } catch (error) {
-      console.error("Error fetching train data:", error);
+      console.error(error);
+      return null;
     }
   }
-
-  async function fetchStopsData() {
-    try {
-      const stopsUrl = "https://ptvapiwrapper.azurewebsites.net/trains/get-all-stops";
-      const options = getFetchOptions();
-      const stopsDataResponse = await fetchData(stopsUrl, options);
-      if (stopsDataResponse) {
-        stopData = stopsDataResponse.map((stop: any) =>
-          new Trainstop(
-            stop.stop_id,
-            stop.stop_name,
-            stop.stop_suburb,
-            stop.stop_latitude,
-            stop.stop_longitude,
-            stop.route_type,
-          )
+  
+  onMount(() => {
+    fetchData("https://ptvapiwrapper.azurewebsites.net/trains/get-all-routes").then(responseData => {
+      if (responseData) {
+        trainRoute = responseData.map(
+          (item: any) => new Train(item.route_type, item.route_id, item.route_name)
         );
       }
-    } catch (error) {
-      console.error("Error fetching stops data:", error);
-    }
-  }
-
-  async function fetchNextTrains() {
-    try {
-      if (selectedStation) {
-        const departuresUrl = `https://ptvapiwrapper.azurewebsites.net/trains/get-departures/${selectedStation.stop_id}`;
-        const options = getFetchOptions();
-        const departuresResponse = await fetchData(departuresUrl, options);
-        if (departuresResponse) {
-          departuresData = departuresResponse;
-          fetchTrainData(); // Refresh routes based on the selected station
-        }
+    });
+    fetchData("https://ptvapiwrapper.azurewebsites.net/trains/get-all-stops").then(stopsDataResponse => {
+      if (stopsDataResponse) {
+        stopData = stopsDataResponse.map(
+          (stop: any) =>
+            new Trainstop(
+              stop.stop_id,
+              stop.stop_name,
+              stop.stop_suburb,
+              stop.stop_latitude,
+              stop.stop_longitude,
+              stop.route_type
+            )
+        );
       }
-    } catch (error) {
-      console.error("Error fetching next trains:", error);
-    }
-  }
-
-  onMount(() => {
-    fetchTrainData(); // Fetch train data on component mount
-    fetchStopsData(); // Fetch stops data on component mount
-    const lastSelectedStation = localStorage.getItem('selectedStation');
-    if (lastSelectedStation) {
-      selectedStation = JSON.parse(lastSelectedStation);
-      selected = selectedStation?.stop_name ?? 'Select Train Station';
-    }
+    });
   });
-
+  
+  /* import { onMount, afterUpdate } from "svelte";
   afterUpdate(() => {
     if (selectedStation) {
       localStorage.setItem('selectedStation', JSON.stringify(selectedStation));
     }
-  });
-
+  }); */
+  
+  // Update data when selectedStation changes
+  $: {
+    if (selectedStation) {
+      fetchNextTrains();
+    }
+  }
+  
+  async function fetchNextTrains() {
+    try {
+      if (selectedStation) {
+        const departuresResponse = await fetchData(`https://ptvapiwrapper.azurewebsites.net/trains/get-departures/${selectedStation.stop_id}`);
+        if (departuresResponse) {
+          departuresData = departuresResponse;
+          fetchData("https://ptvapiwrapper.azurewebsites.net/trains/get-all-routes"); // Refresh routes based on the selected station
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
   function getRouteName(route_id: number) {
     const route = trainRoute.find(route => route.route_id === route_id);
     return route ? route.route_name : '';
   }
-
+  
   function organizeDeparturesByRoute(routeId: number) {
     const currentTimestamp = new Date().getTime();
     return (
@@ -148,53 +167,71 @@
         .slice(0, 4) || []
     );
   }
-
+  
   function departureTimeWithMinutesLeft(departureTime: Date) {
     const scheduledTime: Date = new Date(departureTime);
     const currentTime: Date = new Date();
-
-
+    // Calculate the difference in milliseconds
     const diffInMilliseconds: number = Number(scheduledTime.getTime()) - Number(currentTime.getTime());
-    const diffInMinutes = Math.ceil(diffInMilliseconds / (1000 * 60));
-
+    const diffInMinutes = Math.ceil(diffInMilliseconds / (1000 * 60)); // Convert milliseconds to minutes
     return `${diffInMinutes} min`;
   }
-
-</script>
-
-<main>
-  <Button class="bg-blue-500 text-white sizes" size="lg">{selected}<ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" /></Button>
-  <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
-    {#each stopData as stop (stop.stop_id)}
-      <DropdownItem on:click={() => selectItem(stop)}>{stop.stop_name}</DropdownItem>
-    {/each}
-  </Dropdown>
-
   
-  {#if departuresData != undefined && departuresData.departures != undefined}
-    <Table striped={true}>
-      <TableHead>
-        <TableHeadCell style="background-color: darkgrey; color: white;">
-          <div>Destination/</div>
-          <div>Route</div>
-        </TableHeadCell>
-        <TableHeadCell style="background-color: darkgrey; color: white;">
-          <div>Departing</div>
-          <div>Platform</div>
-        </TableHeadCell>
-        <TableHeadCell style="background-color: darkgrey; color: white;">
-          <div>Departing</div>
-          <div>Platform</div>
-        </TableHeadCell>
-        <TableHeadCell style="background-color: darkgrey; color: white;">
-          <div>Departing</div>
-          <div>Platform</div>
-        </TableHeadCell>
-        <TableHeadCell style="background-color: darkgrey; color: white;">
-          <div>Departing</div>
-          <div>Platform</div>
-        </TableHeadCell>
-      </TableHead>
+  
+  let searchInput = '';
+  let stopsToDisplay = stopData;
+  
+  function searchStops() {
+    let results = stopData.filter(stop =>
+      stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    stopsToDisplay = results;
+    return results;
+  }
+  
+  function handleSubmit(event: any) {
+    event.preventDefault();
+    const searchResults = searchStops();
+    stopsToDisplay = searchResults
+    if (searchResults.length === 1) {
+      selectItem(searchResults[0]);
+    } else {
+      // Handle multiple search results or no results
+    }
+  }
+  
+  </script>
+  <main>
+    <Button class="bg-blue-600 text-white sizes" size="lg">
+      {selected}
+      <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
+    </Button>
+  
+    <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
+      <div slot="header" class="p-3">
+        <form on:submit={handleSubmit} on:submit|preventDefault={updateUserDetails} >
+          <Search size="md" bind:value={searchInput} on:keyup={searchStops} />
+        </form>
+      </div>
+      {#each stopsToDisplay as stop (stop.stop_id)}
+        <DropdownItem on:click={() => selectItem(stop)} id="trainstation" bind:value={trainstation} >{stop.stop_name}</DropdownItem>
+      {/each}
+    </Dropdown>
+    
+      {#if departuresData != undefined && departuresData.departures != undefined}
+        <Table striped={true}>
+          <TableHead>
+            <TableHeadCell style="background-color: darkgrey; color: white;">
+              <div>Destination/</div>
+              <div>Route</div>
+            </TableHeadCell>
+      {#each new Array(4) as _, index}
+          <TableHeadCell style="background-color: darkgrey; color: white;">
+            <div>Departing</div>
+            <div>Platform</div>
+          </TableHeadCell>
+      {/each}
+          </TableHead>
       <TableBody>
         {#each trainRoute.filter(route => (departuresData?.departures ?? []).some(departure => departure.route_id === route.route_id)) as route}
           <TableBodyRow>
@@ -209,11 +246,11 @@
             {/each}
           </TableBodyRow>
         {/each}
-      </TableBody>
+      </TableBody>  
     </Table>
   {/if}
-</main>
-<style>
-
-
-</style>
+  </main>
+  
+  <style>
+    /* Add your styles here if needed */
+  </style>
