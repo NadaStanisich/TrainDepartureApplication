@@ -8,6 +8,7 @@
     let email = ''; // New email address
     let backgroundColour = 'blue'; //'bg-blue-400'; Set default background color to blue
     
+    
     async function updateUserDetails() {
     const { error } = await supabase
         .from('users')

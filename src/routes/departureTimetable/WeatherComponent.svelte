@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { openWeatherMapUrl } from '$lib/weatherinfo.js';
 
-	let weatherData = {};
+	let weatherData = {'main': {'temp': 0}, 'weather': [{'icon': ''}, {'description': ''}], 'name': ''};
 
 	onMount(async () => {
 		try {
