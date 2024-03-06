@@ -9,14 +9,21 @@
     let backgroundColour = 'blue'; //'bg-blue-400'; Set default background color to blue
     
     async function updateUserDetails() {
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('users')
         .update({
             name: name,
             email: email,
             bg_colour: backgroundColour,
         })
-        .eq('email', email); // Using'email' as a unique identifier for the user
+        .eq('email', email) // Using'email' as a unique identifier for the user
+        .select();
+
+    if(data) {
+        console.log("data: ", data)
+    } else {
+        console.log("no data")
+    }
 
     if (error) {
         console.error('Error updating user details:', error.message);

@@ -18,7 +18,9 @@
   import { Trainstop } from "$lib/trainstop";
   import type { TrainDeparture, Departures } from "$lib/traindeparture";
   import type { TrainDirections } from "$lib/traindirections";
-  
+  import { supabase } from '$lib/supabase.js';
+  import { goto } from '$app/navigation'; // Import goto for navigation
+
   let selected = 'Select Train Station'; // Initial button name
   let selectedStation: Trainstop | null = null;
   let trainRoute: Train[] = [];
@@ -26,11 +28,45 @@
   let departureData: TrainDeparture[] = [];
   let directionData: TrainDirections[] = [];
   let departuresData: Departures | undefined = undefined;
+  let  trainstation ='';
+  let email='';
   
+
+  async function updateUserDetails(users: any) {
+    const { data,  error } = await supabase
+        .from('users')
+        .update({
+            trainstation: "trainstation",
+
+        })
+        .eq('email', 'breakingbad@gmail.com') // Add a WHERE clause to specify the user ID
+        .select();
+        
+
+
+    if(data) {
+        console.log("data: ", data)
+    } else {
+        console.log("no data")
+    }
+    if (error) {
+        console.error('Error updating user details:', error.message);
+    } else {
+        console.log('User details updated successfully.');
+
+        // Redirect to trainTimes page
+        goto('/departureTimetable');
+    }
+}
+
+
+
+
   function selectItem(item: Trainstop) {
     selected = item.stop_name; // Update button name
     selectedStation = item;
     fetchNextTrains(); // Fetch next trains when a new station is selected
+    updateUserDetails("breakingbad@gmail.com")
   }
   
   function getFetchOptions() {
@@ -173,12 +209,12 @@
   
     <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
       <div slot="header" class="p-3">
-        <form on:submit={handleSubmit}>
-          <Search size="md" bind:value={searchInput} on:keyup={searchStops}/>
+        <form on:submit={handleSubmit} on:submit|preventDefault={updateUserDetails} >
+          <Search size="md" bind:value={searchInput} on:keyup={searchStops} />
         </form>
       </div>
       {#each stopsToDisplay as stop (stop.stop_id)}
-        <DropdownItem on:click={() => selectItem(stop)}>{stop.stop_name}</DropdownItem>
+        <DropdownItem on:click={() => selectItem(stop)} id="trainstation" bind:value={trainstation} >{stop.stop_name}</DropdownItem>
       {/each}
     </Dropdown>
     
