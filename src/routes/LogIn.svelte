@@ -2,6 +2,7 @@
     import { Label, Input, Button } from 'flowbite-svelte';
     import { supabase } from '$lib/supabase.js';
     import { goto } from '$app/navigation';
+    import { selectedColour } from '$lib/colour.js'; // Import selectedColour store
   
     let email = '';
     let password = '';
@@ -19,11 +20,13 @@
             const { data: profileData, error: profileError } = await supabase
                 .from('users')
                 .select('name, email, trainstation, bg_colour') 
-                .eq('email', email)                           // <= need to use 'id'(uuid) instead?>
+                .eq('email', email)                           
                 .single();  
             if (profileData) {
                 console.log(profileData);
                 localStorage.setItem('users', JSON.stringify(profileData));
+                // Update the background color preference
+                selectedColour.set(profileData.bg_colour || 'blue');
             } else if(profileError) {
                 console.log(profileError);
             }
@@ -34,22 +37,25 @@
             console.log(error);
             loginError = true;
         }
+
     }
 
-	async function gitHubSignIn() {
-		const { data, error } = await supabase.auth.signInWithOAuth({
-			provider: 'github'
-		});
-		if (data) {
-			loginError = false;
-			goto('/departureTimetable');
-		} else if(error) {
-			console.log(error);
-			loginError = true;
-		}
-	}
-	
+    async function gitHubSignIn() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'github'
+        });
+        if (data) {
+            loginError = false;
+            goto('/departureTimetable');
+        } else if(error) {
+            console.log(error);
+            loginError = true;
+        }
+    }
 </script>
+
+<div class="{loginError ? 'bg error' : 'bg'}">
+</div>
 
 <div class="text-center py-11  text-white">
 	<h1 class="text-4xl font-bold">Train Departure App</h1>
@@ -75,12 +81,11 @@
 		<div class="mt-6 text-sm text-white">
 			<a href="/createAccount" class="text-white underline">Create Account</a>
 		</div>
-		<div class="mt-2 text-sm text-white">
-			<a href="/" class="text-white underline">Forgot your password?</a>
-		</div>
 	</form>
 
 	{#if loginError}
 		<p class="text-center text-white mt-4">Invalid email or password</p>
 	{/if}
 </div>
+
+

@@ -6,8 +6,7 @@
 
     let name = ''; // New name
     let email = ''; // New email address
-    let backgroundColour = 'blue'; //'bg-blue-400'; Set default background color to blue
-    
+    let backgroundColour = '#3B82F6'; // Default background color is blue #3B82F6
     
     async function updateUserDetails() {
     const { error } = await supabase
@@ -40,28 +39,37 @@
 
         <div class="mb-4">
             <Label for="name">Name</Label>
-            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder={name = (JSON.parse(localStorage.getItem('users'))?.name || '')} />
+            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder={name = (JSON.parse(localStorage.getItem('users'))?.name || '' )} />
             <!--   Name is set to the current name of the user  -->
         </div>
 
         <div class="mb-4">
             <Label for="email">Email</Label>              
             <Input class="mb-3" id="email" type="email" bind:value={email} placeholder={email = (JSON.parse(localStorage.getItem('users'))?.email || '')} />
-    <!--   Email is set to the current email address of the user  -->
+            <!--   Email is set to the current email address of the user  -->
         </div>
         <div class="mb-4">
             <Label for="backgroundColour">Background Colour</Label>
             <Select id="backgroundColour" bind:value={backgroundColour}>
-                <option value="blue">Default (Blue)</option>
-                <option value="red">Red</option>
-                <option value="green">Green</option>
-                <!-- More colour options to be added -->
+                <option value="#3B82F6">Default (Blue)</option>
+                <option value="#FF0000">Red</option> 
+                <option value="#00FF00">Green</option> 
+                <option value="#FFFF00">Yellow</option>
+                <option value="#FF00FF">Pink</option>
+                <option value="#00FFFF">Cyan</option>
+                <option value="#FFA500">Orange</option>
+                <option value="#800080">Purple</option>
+                <option value="#000000">Black</option>
+                <option value="#FFFFFF">White</option>
+                <option value="#808080">Grey</option>
             </Select>
         </div>
 
         <div class="mt-14 flex justify-center">
             <Button class="mr-1" type="submit">Update Details</Button>
-            <Button><a href="/departureTimetable">Cancel</a></Button> 
+            <!--   Update button to submit the form  -->
+            <Button><a href="/departureTimetable">Cancel</a></Button>   
+            <!--   Cancel button to redirect to the trainTimes page  -->
         </div>
     </form>
 </div>

@@ -3,11 +3,12 @@
   import { supabase } from '$lib/supabase.js';
   import { goto } from '$app/navigation';
   import { user } from '$lib/user';
+  import { selectedColour } from '$lib/colour.js'; // Import selectedColour store
 
   let name = '';
   let email = '';
   let password = '';
-  let backgroundColour = '#3B82F6'; //'bg-blue-400';  Set default background color to blue
+  let backgroundColour = '#3B82F6'; // Set default background color to blue
 
   async function signUpNewUser() {
     try {
@@ -24,7 +25,9 @@
       } else {
 
         if(data) {
-          addUserToDb()
+          addUserToDb();
+          // Update selectedColour store with the new background colour
+          selectedColour.set(backgroundColour);
         }
       }
       
@@ -50,6 +53,7 @@
           goto('/departureTimetable');
         }
       }
+
     } catch (error) {
       console.error('Unknown error:', (error as Error).message);
     }
@@ -80,12 +84,19 @@
   <div class="mb-4">
           <Label for="background-colour">Background Colour</Label>
           <Select id="backgroundColour" bind:value={backgroundColour}>
-            <option value="blue">Default (Blue)</option>
-            <option value="red">Red</option>
-            <option value="green">Green</option>
-            <!-- More colour options to be added -->
+            <option value="#3B82F6">Default (Blue)</option>
+            <option value="#FF0000">Red</option> 
+            <option value="#00FF00">Green</option> 
+            <option value="#FFFF00">Yellow</option>
+            <option value="#FF00FF">Pink</option>
+            <option value="#00FFFF">Cyan</option>
+            <option value="#FFA500">Orange</option>
+            <option value="#800080">Purple</option>
+            <option value="#000000">Black</option>
+            <option value="#FFFFFF">White</option>
+            <option value="#808080">Grey</option>
         </Select>
-      </div>
+  </div>
 
   <div class="mt-14 flex justify-center">
     <Button class="mr-1" type="submit">Submit</Button>
