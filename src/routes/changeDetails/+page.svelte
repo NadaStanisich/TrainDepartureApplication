@@ -7,6 +7,10 @@
     let name = ''; // New name
     let email = ''; // New email address
     let backgroundColour = '#3B82F6'; // Default background color is blue #3B82F6
+
+    let users = localStorage.getItem('users');
+    let parsedUsers = users ? JSON.parse(users) : {};
+
     
     async function updateUserDetails() {
     const { error } = await supabase
@@ -39,13 +43,14 @@
 
         <div class="mb-4">
             <Label for="name">Name</Label>
-            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder={name = (JSON.parse(localStorage.getItem('users'))?.name || '' )} />
+            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder={name = (parsedUsers?.name || '' )} />
             <!--   Name is set to the current name of the user  -->
         </div>
 
         <div class="mb-4">
             <Label for="email">Email</Label>              
-            <Input class="mb-3" id="email" type="email" bind:value={email} placeholder={email = (JSON.parse(localStorage.getItem('users'))?.email || '')} />
+            <Input class="mb-3" id="email" type="email" bind:value={email} placeholder={email = (parsedUsers?.email || '')} />
+
             <!--   Email is set to the current email address of the user  -->
         </div>
         <div class="mb-4">
