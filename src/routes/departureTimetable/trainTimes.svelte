@@ -77,6 +77,7 @@
               stop.route_type
             )
         );
+        stopsToDisplay = stopData; // Update stopsToDisplay with all stops initially
       }
     });
   });
@@ -146,22 +147,19 @@
   let stopsToDisplay = stopData;
   
   function searchStops() {
-    let results = stopData.filter(stop =>
-      stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    stopsToDisplay = results;
-    return results;
+    if (searchInput === '') {
+      stopsToDisplay = stopData; // Display all stops when search input is empty
+    } else {
+      let results = stopData.filter(stop =>
+        stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      stopsToDisplay = results;
+    }
   }
   
   function handleSubmit(event: any) {
     event.preventDefault();
-    const searchResults = searchStops();
-    stopsToDisplay = searchResults
-    if (searchResults.length === 1) {
-      selectItem(searchResults[0]);
-    } else {
-      // Handle multiple search results or no results
-    }
+    searchStops();
   }
   
   </script>

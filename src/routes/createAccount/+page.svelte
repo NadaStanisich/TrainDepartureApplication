@@ -4,11 +4,13 @@
   import { goto } from '$app/navigation';
   import { user } from '$lib/user';
   import { selectedColour } from '$lib/colour.js'; // Import selectedColour store
+  import { colourOptions } from '$lib/colourOptions.js';
 
   let name = '';
   let email = '';
   let password = '';
-  let backgroundColour = '#3B82F6'; // Set default background color to blue
+  let backgroundColour = '#3B82F6'; /* Set default background color to blue */                                                                                                        let videoUrl = 'https://www.youtube.com/embed/ZzUsKizhb8o?list=PL_vkVwrwck3NJ9ajMQv7Y-DfX9gVAk5in&index=2';
+
 
   async function signUpNewUser() {
     try {
@@ -84,18 +86,10 @@
   <div class="mb-4">
           <Label for="background-colour">Background Colour</Label>
           <Select id="backgroundColour" bind:value={backgroundColour}>
-            <option value="#3B82F6">Default (Blue)</option>
-            <option value="#FF0000">Red</option> 
-            <option value="#00FF00">Green</option> 
-            <option value="#FFFF00">Yellow</option>
-            <option value="#FF00FF">Pink</option>
-            <option value="#00FFFF">Cyan</option>
-            <option value="#FFA500">Orange</option>
-            <option value="#800080">Purple</option>
-            <option value="#000000">Black</option>
-            <option value="#FFFFFF">White</option>
-            <option value="#808080">Grey</option>
-        </Select>
+            {#each colourOptions as colourOption}
+              <option value={colourOption.value}>{colourOption.name}</option>
+            {/each}
+          </Select>
   </div>
 
   <div class="mt-14 flex justify-center">
@@ -104,3 +98,36 @@
   </div>
 </form>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{#if backgroundColour === 'video'}
+  <!-- Display the video when the video option is selected -->
+  <div style="display: flex; justify-content: center;">
+    <iframe width="760" height="450" src={videoUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+{/if} 
