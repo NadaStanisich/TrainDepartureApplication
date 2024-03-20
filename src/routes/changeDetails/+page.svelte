@@ -5,13 +5,16 @@
     import { goto } from '$app/navigation'; // Import goto for navigation
     import { colourOptions } from '$lib/colourOptions.js';
    
-    let name = ''; // New name
-    let email = ''; // New email address
-    let backgroundColour = '#3B82F6'; // Default background color is blue #3B82F6
     let users = localStorage.getItem('users'); // Get the users from local storage
-    let parsedUsers = users ? JSON.parse(users) : {}; /* Parse the users from local storage*/                                                                                               let videoUrl = 'https://www.youtube.com/embed/ZzUsKizhb8o?list=PL_vkVwrwck3NJ9ajMQv7Y-DfX9gVAk5in&index=2'; // Video URL for the background video
+    let parsedUsers = users ? JSON.parse(users) : {}; /* Parse the users from local storage*/
+    let uuid = parsedUsers?.id || '';
+    let name = parsedUsers?.name || ''; // New name
+    let email = parsedUsers?.email || ''; // New email address
+    let backgroundColour = '#3B82F6'; // Default background color is blue #3B82F6
     
     async function updateUserDetails() {
+        console.log('Updating: ', parsedUsers)
+        console.log('Updating user details...', name, email, uuid)
         const { error } = await supabase
             .from('users')
             .update({
@@ -19,7 +22,7 @@
                 email: email,
                 bg_colour: backgroundColour,
             })
-            .eq('email', email); // Using'email' as a unique identifier for the user
+            .eq('id', uuid); // Using 'id' as a unique identifier for the user
 
         if (error) {
             console.error('Error updating user details:', error.message);
@@ -42,13 +45,13 @@
 
         <div class="mb-4">
             <Label for="name">Name</Label>
-            <Input class="mb-3" id="name" type="text" bind:value={name} placeholder={name = (parsedUsers?.name || '' )} />
+            <Input class="mb-3" id="name" type="text" bind:value={name} />
             <!--   Name is set to the current name of the user  -->
         </div>
 
         <div class="mb-4">
             <Label for="email">Email</Label>              
-            <Input class="mb-3" id="email" type="email" bind:value={email} placeholder={email = (parsedUsers?.email || '')} />
+            <Input class="mb-3" id="email" type="email" bind:value={email} />
             <!--   Email is set to the current email address of the user  -->
         </div>
 
@@ -69,36 +72,3 @@
         </div>
     </form>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{#if backgroundColour === 'video'}
-  <!-- Display the video when the video option is selected -->
-  <div style="display: flex; justify-content: center;">
-    <iframe width="760" height="450" src={videoUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  </div>
-{/if} 
-

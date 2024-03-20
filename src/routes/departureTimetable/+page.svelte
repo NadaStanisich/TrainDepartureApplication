@@ -10,7 +10,7 @@
     }
 	//import ChangeDetails from '../newDetails/changeDetails.svelte'; // Import the ChangeDetails component
 
-  </script>
+</script>
   
   <div class="container">
 	<div class="header">
