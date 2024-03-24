@@ -21,7 +21,7 @@
             const { data: profileData, error: profileError } = await supabase
                 .from('users')
                 .select('id, name, email, trainstation, bg_colour') 
-                .eq('id', uuid) // Using 'id' as a unique identifier for the user
+                .eq('email', email) // Using 'email' as a unique identifier for the user
                 .single();  
             if (profileData) {
                 console.log(profileData);
