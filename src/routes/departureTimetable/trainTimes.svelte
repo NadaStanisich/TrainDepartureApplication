@@ -151,6 +151,9 @@ async function selectItem(item: Trainstop) {
         );
       }
     });
+
+
+
   });
   
   onMount(async () => {
@@ -170,7 +173,15 @@ async function selectItem(item: Trainstop) {
   } else {
     console.error('Error fetching user data:', userError ? userError.message : 'No data found.');
   }
+
+  await checkUser();
 });
+
+async function checkUser() {
+  let token = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iit5UTY0bUJyYnhzdWhUZ0wiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzExNDE4NTk3LCJpYXQiOjE3MTE0MTQ5OTcsImlzcyI6Imh0dHBzOi8vZml6dnluZ3lqZ3Nrcnl6bHd5ZXMuc3VwYWJhc2UuY28vYXV0aC92MSIsInN1YiI6Ijc4NGI2MTYzLWVmYmItNDNhYy1iYWQ2LWFjNjc3OTA3MjVhNyIsImVtYWlsIjoiYnJlYWtpbmdiYWRAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6e30sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MTE0MTQ5OTd9XSwic2Vzc2lvbl9pZCI6IjdhYWI5MTlmLTI4MmUtNGFjZC1hOGQ1LWJiYjY4N2I5MDVlYSIsImlzX2Fub255bW91cyI6ZmFsc2V9.F2hPGAlKunGFPkIO2ipZkzmpkdqzi6jq15EgkVTVRiA";    //  Anh's testing stuff
+  const { data: { user } } = await supabase.auth.getUser(token);
+  console.log("data2-: ", user)
+}
   /* import { onMount, afterUpdate } from "svelte";
 
   afterUpdate(() => {

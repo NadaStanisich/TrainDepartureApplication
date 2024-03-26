@@ -10,11 +10,20 @@
     let loginError = false;
   
     async function signInWithEmail() {
+        console.log(email, password)
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
         });
+
+        let token = "";
         if (data) {
+            console.log("data: ", data);
+            token = data.session?.access_token || "not found";
+
+            if(data.session) {
+                alert("user logged in");
+            }
             loginError = false;
             
             // Fetch user profile after successful login
@@ -22,7 +31,11 @@
                 .from('users')
                 .select('id, name, email, trainstation, bg_colour') 
                 .eq('email', email) // Using 'email' as a unique identifier for the user
-                .single();  
+                .single();
+
+
+
+
             if (profileData) {
                 console.log(profileData);
                 localStorage.setItem('users', JSON.stringify(profileData));
@@ -38,6 +51,9 @@
             console.log(error);
             loginError = true;
         }
+
+        const { data: { user } } = await supabase.auth.getUser(token);
+        console.log("data2: ", data)
 
     }
 
