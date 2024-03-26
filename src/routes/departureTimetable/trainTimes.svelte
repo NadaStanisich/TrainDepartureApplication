@@ -33,7 +33,7 @@
   let  trainstation ='';
   let email='';
   
-  async function checkUserSession() {
+  /* async function checkUserSession() {
   try {
     
     // Get the current user session
@@ -50,8 +50,7 @@
   } catch (error) {
     console.error('Error checking user session:', error.message);
   }
-}
-  
+   */
   async function updateUserDetails(email: string, selectedStopName: string) {
     console.log("updateDetails: ", selectedStopName)
   const { data, error } = await supabase
@@ -149,6 +148,7 @@ async function selectItem(item: Trainstop) {
               stop.route_type
             )
         );
+        stopsToDisplay = stopData; // Update stopsToDisplay with all stops initially
       }
     });
 
@@ -248,11 +248,14 @@ async function checkUser() {
   let stopsToDisplay = stopData;
   
   function searchStops() {
-    let results = stopData.filter(stop =>
-      stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    stopsToDisplay = results;
-    return results;
+    if (searchInput === '') {
+      stopsToDisplay = stopData; // Display all stops when search input is empty
+    } else {
+      let results = stopData.filter(stop =>
+        stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      stopsToDisplay = results;
+    }
   }
   
   async function handleSubmit(event: SubmitEvent) {
