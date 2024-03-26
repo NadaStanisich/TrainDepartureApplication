@@ -1,4 +1,5 @@
 <script lang="ts">
+
   import {
     Button,
     Dropdown,
@@ -171,6 +172,7 @@ async function selectItem(item: Trainstop) {
   }
 });
   /* import { onMount, afterUpdate } from "svelte";
+
   afterUpdate(() => {
     if (selectedStation) {
       localStorage.setItem('selectedStation', JSON.stringify(selectedStation));
@@ -310,6 +312,4 @@ async function selectItem(item: Trainstop) {
   {/if}
   </main>
   
-  <style>
-    /* Add your styles here if needed */
-  </style>
+  
