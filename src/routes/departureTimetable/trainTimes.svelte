@@ -11,7 +11,7 @@
     TableHead,
     TableHeadCell
   } from 'flowbite-svelte';
-  
+
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import { onMount } from "svelte";
   import { Train } from "$lib/train";
@@ -20,6 +20,7 @@
   import type { TrainDirections } from "$lib/traindirections";
   import { supabase } from '$lib/supabase.js';
   import { goto } from '$app/navigation'; // Import goto for navigation
+  import { auth } from '$lib/supabase.js';
 
   let selected = 'Select Train Station'; // Initial button name
   let selectedStation: Trainstop | null = null;
@@ -31,43 +32,77 @@
   let  trainstation ='';
   let email='';
   
+  async function checkUserSession() {
+  try {
+    
+    // Get the current user session
+    const session = await supabase.auth.getSession();
 
-  async function updateUserDetails(users: any) {
-    const { data,  error } = await supabase
-        .from('users')
-        .update({
-            trainstation: "trainstation",
+    if (session?.data.session?.user) {
+      // There is an active user session
+      console.log('User is logged in:', session.user.email);
+      // You can access other user details like session.user.id, session.user.role, etc.
+    } else {
+      // No active user session
+      console.log('No user logged in.');
+    }
+  } catch (error) {
+    console.error('Error checking user session:', error.message);
+  }
+}
+  
+  async function updateUserDetails(email: string, selectedStopName: string) {
+    console.log("updateDetails: ", selectedStopName)
+  const { data, error } = await supabase
+    .from('users')
+    .update({
+      trainstation: selectedStopName,
+    })  
+    .eq('email', email)
+    
 
-        })
-        .eq('email', 'breakingbad@gmail.com') // Add a WHERE clause to specify the user ID
-        .select();
+  if (data) {
+    console.log("Data updated for user with email:", email);
+  } else {
+    console.log("No data updated for user with email:", email);
+  }
+
+  if (error) {
+    console.error('Error updating user details for email', email, ':', error.message);
+  } else {
+    console.log('User details updated successfully for email:', email);
+  }
+}
+
+async function selectItem(item: Trainstop) {
+  try {
+    // Get current user session
+    console.log("selectItem: ", item, selectedStation, trainstation)
+    
+    const session = await supabase.auth.getSession();
+    const email: string = session.data.session?.user.email!; // Assuming email is present in user information
+    console.log("selectItem :", session, email);
+
+    if (session) {
+      const { data, error } = session;
+      if (data.session?.user) {
         
-
-
-    if(data) {
-        console.log("data: ", data)
+        selected = item.stop_name;
+        selectedStation = item;
+        fetchNextTrains();
+        updateUserDetails(email, item.stop_name);
+      } else {
+        console.error('No user logged in.');
+      }
     } else {
-        console.log("no data")
+      console.error('No active session.');
     }
-    if (error) {
-        console.error('Error updating user details:', error.message);
-    } else {
-        console.log('User details updated successfully.');
-
-        // Redirect to trainTimes page
-        goto('/departureTimetable');
-    }
+  } catch (error) {
+    console.error('Error during item selection:', error.message);
+  }
 }
 
 
-
-
-  function selectItem(item: Trainstop) {
-    selected = item.stop_name; // Update button name
-    selectedStation = item;
-    fetchNextTrains(); // Fetch next trains when a new station is selected
-    updateUserDetails("breakingbad@gmail.com")
-  }
   
   function getFetchOptions() {
     return {
@@ -117,6 +152,24 @@
     });
   });
   
+  onMount(async () => {
+  // Assuming there's a function to fetch the user's data when they log in
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('trainstation')
+    .single(); // Assuming there's only one user data entry per user
+
+  if (userData && userData.trainstation) {
+    const selectedStop = stopData.find(stop => stop.stop_name === userData.trainstation);
+    if (selectedStop) {
+      selectedStation = selectedStop;
+      selected = selectedStop.stop_name;
+      fetchNextTrains(); // Fetch next trains when a saved station is loaded
+    }
+  } else {
+    console.error('Error fetching user data:', userError ? userError.message : 'No data found.');
+  }
+});
   /* import { onMount, afterUpdate } from "svelte";
   afterUpdate(() => {
     if (selectedStation) {
@@ -189,16 +242,22 @@
     return results;
   }
   
-  function handleSubmit(event: any) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    const searchResults = searchStops();
-    stopsToDisplay = searchResults
-    if (searchResults.length === 1) {
-      selectItem(searchResults[0]);
+    searchStops();
+    if (stopsToDisplay.length === 1) {
+      selectItem(stopsToDisplay[0]);
     } else {
       // Handle multiple search results or no results
     }
   }
+
+  async function submitAndUpdateUserDetails(event: SubmitEvent) {
+  await handleSubmit(event);
+  if (selectedStation && email) {
+    updateUserDetails(email, selectedStation.stop_name);
+  }
+}
   
   </script>
   <main>
@@ -206,15 +265,15 @@
       {selected}
       <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
     </Button>
-  
-    <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
+    
+    <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" id="trainstation"> <!-- bind:value={trainstation}> -->
       <div slot="header" class="p-3">
-        <form on:submit={handleSubmit} on:submit|preventDefault={updateUserDetails} >
+        <form on:submit={submitAndUpdateUserDetails}>
           <Search size="md" bind:value={searchInput} on:keyup={searchStops} />
         </form>
       </div>
       {#each stopsToDisplay as stop (stop.stop_id)}
-        <DropdownItem on:click={() => selectItem(stop)} id="trainstation" bind:value={trainstation} >{stop.stop_name}</DropdownItem>
+        <DropdownItem on:click={() => selectItem(stop)} value={stop.stop_id}>{stop.stop_name}</DropdownItem>
       {/each}
     </Dropdown>
     
