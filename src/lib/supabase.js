@@ -5,3 +5,4 @@ const supabaseUrl = PUBLIC_SUPABASE_URL
 const supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const auth = supabase.auth;
