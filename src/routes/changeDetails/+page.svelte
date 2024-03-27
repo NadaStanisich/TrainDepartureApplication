@@ -13,6 +13,7 @@
     let backgroundColour = '#3B82F6'; // Default background color is blue #3B82F6
     
     async function updateUserDetails() {
+
         console.log('Updating: ', parsedUsers)
         console.log('Updating user details...', name, email, uuid)
         const { error } = await supabase
