@@ -17,13 +17,15 @@
         });
 
         let token = "";
-        if (data) {
+
+        if (data.user) {
             console.log("data: ", data);
             token = data.session?.access_token || "not found";
 
             if(data.session) {
                 alert("user logged in");
             }
+
             loginError = false;
             
             // Fetch user profile after successful login
@@ -32,8 +34,6 @@
                 .select('id, name, email, trainstation, bg_colour') 
                 .eq('email', email) // Using 'email' as a unique identifier for the user
                 .single();
-
-
 
 
             if (profileData) {

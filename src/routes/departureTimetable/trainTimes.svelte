@@ -51,6 +51,7 @@
     console.error('Error checking user session:', error.message);
   }
    */
+  
   async function updateUserDetails(email: string, selectedStopName: string) {
     console.log("updateDetails: ", selectedStopName)
   const { data, error } = await supabase
@@ -178,7 +179,7 @@ async function selectItem(item: Trainstop) {
 });
 
 async function checkUser() {
-  let token = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iit5UTY0bUJyYnhzdWhUZ0wiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzExNDE4NTk3LCJpYXQiOjE3MTE0MTQ5OTcsImlzcyI6Imh0dHBzOi8vZml6dnluZ3lqZ3Nrcnl6bHd5ZXMuc3VwYWJhc2UuY28vYXV0aC92MSIsInN1YiI6Ijc4NGI2MTYzLWVmYmItNDNhYy1iYWQ2LWFjNjc3OTA3MjVhNyIsImVtYWlsIjoiYnJlYWtpbmdiYWRAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6e30sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MTE0MTQ5OTd9XSwic2Vzc2lvbl9pZCI6IjdhYWI5MTlmLTI4MmUtNGFjZC1hOGQ1LWJiYjY4N2I5MDVlYSIsImlzX2Fub255bW91cyI6ZmFsc2V9.F2hPGAlKunGFPkIO2ipZkzmpkdqzi6jq15EgkVTVRiA";    //  Anh's testing stuff
+  let token = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iit5UTY0bUJyYnhzdWhUZ0wiLCJ0eXAiOiJKV1QifQ.eyJhbGciOiJIUzI1NiIsImtpZCI6Iit5UTY0bUJyYnhzdWhUZ0wiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzExNTQzNTI0LCJpYXQiOjE3MTE1Mzk5MjQsImlzcyI6Imh0dHBzOi8vZml6dnluZ3lqZ3Nrcnl6bHd5ZXMuc3VwYWJhc2UuY28vYXV0aC92MSIsInN1YiI6IjU5NmFjYjRlLWM1NWEtNDYxYi05MzYxLThlZTNmNzlmMjUzMCIsImVtYWlsIjoicGVyc29uQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnt9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzExNTM5OTI0fV0sInNlc3Npb25faWQiOiJhMTc2ODE4ZS1hYTNiLTQ3YTUtYTMzYy05OTBiMWY4ODZmMWUiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.D6YWuAswuM7OCtK5NUgePjZGwxiwZCWJfxjrDYV_RJY.F2hPGAlKunGFPkIO2ipZkzmpkdqzi6jq15EgkVTVRiA";    //  Anh's testing stuff
   const { data: { user } } = await supabase.auth.getUser(token);
   console.log("data2-: ", user)
 }
