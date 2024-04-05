@@ -99,7 +99,7 @@ async function selectItem(item: Trainstop) {
       console.error('No active session.');
     }
   } catch (error) {
-    console.error('Error during item selection:', error.message);
+    console.error('Error during item selection:', (error as any).message);
   }
 }
 

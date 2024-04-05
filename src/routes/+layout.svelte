@@ -1,4 +1,5 @@
 <script lang="ts">
+	
 	import '../app.pcss';
 	import { onMount } from 'svelte';
 	import { selectedColour } from '$lib/colour.js'; // Import selectedColour store
@@ -20,9 +21,6 @@
 </script>
 
 <main style={dev ? 'border-top: 9px solid red;' : ``}>
-		<slot />
-<style>
-	
-</style>   
+		<slot /> 
 	
 </main>
