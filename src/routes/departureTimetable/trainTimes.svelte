@@ -21,10 +21,15 @@
   import type { TrainDirections } from "$lib/traindirections";
   import { supabase } from '$lib/supabase.js';
   import { goto } from '$app/navigation'; // Import goto for navigation
-  import { auth } from '$lib/supabase.js';
+
+  import { writable } from 'svelte/store';
+  import{ priorStation } from '$lib/station.js'; // Import selectedStation store
+  //import { auth } from '$lib/supabase.js';
+
 
   let selected = 'Select Train Station'; // Initial button name
   let selectedStation: Trainstop | null = null;
+  export let origStationName: any;
   let trainRoute: Train[] = [];
   let stopData: Trainstop[] = [];
   let departureData: TrainDeparture[] = [];
@@ -33,32 +38,14 @@
   let  trainstation ='';
   let email='';
   
-  /* async function checkUserSession() {
-  try {
-    
-    // Get the current user session
-    const session = await supabase.auth.getSession();
-
-    if (session?.data.session?.user) {
-      // There is an active user session
-      console.log('User is logged in:', session.user.email);
-      // You can access other user details like session.user.id, session.user.role, etc.
-    } else {
-      // No active user session
-      console.log('No user logged in.');
-    }
-  } catch (error) {
-    console.error('Error checking user session:', error.message);
-  }
-   */
   
-  async function updateUserDetails(email: string, selectedStopName: string) {
-    console.log("updateDetails: ", selectedStopName)
+async function updateUserDetails(email: string, selectedStopName: string) {
+  console.log("updateDetails: ", selectedStopName)
   const { data, error } = await supabase
     .from('users')
     .update({
       trainstation: selectedStopName,
-    })  
+  })  
     .eq('email', email)
     
 
@@ -78,12 +65,13 @@
 async function selectItem(item: Trainstop) {
   try {
     // Get current user session
-    console.log("selectItem: ", item, selectedStation, trainstation)
+    console.log("selectItem 1 : ", item, selectedStation, trainstation)
     
     const session = await supabase.auth.getSession();
     const email: string = session.data.session?.user.email!; // Assuming email is present in user information
-    console.log("selectItem :", session, email);
+    console.log("selectItem 2 :", session, email);
 
+    
     if (session) {
       const { data, error } = session;
       if (data.session?.user) {
@@ -99,7 +87,7 @@ async function selectItem(item: Trainstop) {
       console.error('No active session.');
     }
   } catch (error) {
-    console.error('Error during item selection:', error.message);
+    console.error('Error during item selection:', (error as any).message);
   }
 }
 
@@ -153,51 +141,24 @@ async function selectItem(item: Trainstop) {
       }
     });
 
-
-
   });
   
-  onMount(async () => {
-  // Assuming there's a function to fetch the user's data when they log in
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('trainstation')
-    .single(); // Assuming there's only one user data entry per user
-
-  if (userData && userData.trainstation) {
-    const selectedStop = stopData.find(stop => stop.stop_name === userData.trainstation);
-    if (selectedStop) {
-      selectedStation = selectedStop;
-      selected = selectedStop.stop_name;
-      fetchNextTrains(); // Fetch next trains when a saved station is loaded
-    }
-  } else {
-    console.error('Error fetching user data:', userError ? userError.message : 'No data found.');
-  }
-
-  await checkUser();
-});
-
-async function checkUser() {
-  let token = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iit5UTY0bUJyYnhzdWhUZ0wiLCJ0eXAiOiJKV1QifQ.eyJhbGciOiJIUzI1NiIsImtpZCI6Iit5UTY0bUJyYnhzdWhUZ0wiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzExNTQzNTI0LCJpYXQiOjE3MTE1Mzk5MjQsImlzcyI6Imh0dHBzOi8vZml6dnluZ3lqZ3Nrcnl6bHd5ZXMuc3VwYWJhc2UuY28vYXV0aC92MSIsInN1YiI6IjU5NmFjYjRlLWM1NWEtNDYxYi05MzYxLThlZTNmNzlmMjUzMCIsImVtYWlsIjoicGVyc29uQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnt9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzExNTM5OTI0fV0sInNlc3Npb25faWQiOiJhMTc2ODE4ZS1hYTNiLTQ3YTUtYTMzYy05OTBiMWY4ODZmMWUiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.D6YWuAswuM7OCtK5NUgePjZGwxiwZCWJfxjrDYV_RJY.F2hPGAlKunGFPkIO2ipZkzmpkdqzi6jq15EgkVTVRiA";    //  Anh's testing stuff
-  const { data: { user } } = await supabase.auth.getUser(token);
-  console.log("data2-: ", user)
-}
-  /* import { onMount, afterUpdate } from "svelte";
-
-  afterUpdate(() => {
-    if (selectedStation) {
-      localStorage.setItem('selectedStation', JSON.stringify(selectedStation));
-    }
-  }); */
   
   // Update data when selectedStation changes
   $: {
     if (selectedStation) {
+      console.log("selectedStation: ", selectedStation)
       fetchNextTrains();
     }
   }
   
+  $: {
+    if (origStationName) {
+      selectedStation = stopData.find(stop => stop.stop_name === origStationName) || null;
+      fetchNextTrains();
+    }
+  }
+
   async function fetchNextTrains() {
     try {
       if (selectedStation) {
@@ -279,10 +240,13 @@ async function checkUser() {
   </script>
   <main>
     <Button class="bg-blue-600 text-white sizes" size="lg">
-      {selected}
+<!--       change button name to prior Station and update selectedStation --> 
+      {selectedStation ? selectedStation.stop_name : selected}
+ <!--  {selected} -->
       <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
     </Button>
     
+
     <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" id="trainstation"> <!-- bind:value={trainstation}> -->
       <div slot="header" class="p-3">
         <form on:submit={submitAndUpdateUserDetails}>
