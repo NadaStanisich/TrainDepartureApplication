@@ -2,7 +2,7 @@
     import { Label, Input, Button } from 'flowbite-svelte';
     import { goto } from '$app/navigation';
     import { selectedColour } from '$lib/colour.js'; // Import selectedColour store
-    import { selectedStation } from '$lib/station.js'; // Import selectedStation store
+    import { priorStation } from '$lib/station.js'; // Import selectedStation store
 
     export let data;
 
@@ -42,8 +42,10 @@
                 localStorage.setItem('users', JSON.stringify(profileData));
                 // Update the background color preference
                 selectedColour.set(profileData.bg_colour || 'blue');
+                console.log('selectedColour', profileData.bg_colour || 'blue');
                 // Update the selected station
-                selectedStation.set(profileData.trainstation || 'Select Train Station');
+                priorStation.set(profileData.trainstation || 'Select Train Station');
+                console.log('selectedStation', profileData.trainstation || 'Select Train Station');
 
             } else if(profileError) {
                 console.log('ProfileError',profileError);
