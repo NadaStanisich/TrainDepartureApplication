@@ -1,16 +1,33 @@
-<script>
+<script lang="ts">
 	import { Button } from 'flowbite-svelte';
 	import { goto } from '$app/navigation'; // Import goto for navigation
 	import TrainTimes from './trainTimes.svelte';
 	import StandardTime from './StandardTime.svelte';
 	import WeatherComponent from './WeatherComponent.svelte';
+	import { onMount } from 'svelte';
+
+	export let data;
+	export let selectedStation: any;
 
 	function goToChangeDetailsPage() {
         goto('/changeDetails'); // Redirect to the changeDetails page
     }
 	//import ChangeDetails from '../newDetails/changeDetails.svelte'; // Import the ChangeDetails component
 
-  </script>
+	onMount(async () => {
+		// Add your code here
+		let sbd = await data.supabase.supabase.auth.getSession();
+		let user =  sbd.data.session.user;
+		console.log("sadf:", sbd.data.session.user);
+		
+		let station = await  data.supabase.supabase.from('users').select('trainstation').eq('email', user.email);
+
+		console.log("station:", station.data[0].trainstation);
+
+		selectedStation = station.data[0].trainstation || "";
+	})
+
+</script>
   
   <div class="container">
 	<div class="header">
@@ -26,7 +43,7 @@
 	
   
 	<div class="main-content">
-		<TrainTimes />
+		<TrainTimes origStationName={selectedStation} />
 	</div>
   
 	<div class="footer">

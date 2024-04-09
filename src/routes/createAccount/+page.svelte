@@ -3,11 +3,14 @@
   import { supabase } from '$lib/supabase.js';
   import { goto } from '$app/navigation';
   import { user } from '$lib/user';
+  import { selectedColour } from '$lib/colour.js'; // Import selectedColour store
+  import { colourOptions } from '$lib/colourOptions.js';
 
   let name = '';
   let email = '';
   let password = '';
-  let backgroundColour = '#3B82F6'; //'bg-blue-400';  Set default background color to blue
+  let backgroundColour = '#3B82F6'; /* Set default background color to blue */                                                                                                        let videoUrl = 'https://www.youtube.com/embed/ZzUsKizhb8o?list=PL_vkVwrwck3NJ9ajMQv7Y-DfX9gVAk5in&index=2';
+
 
   async function signUpNewUser() {
     try {
@@ -24,7 +27,9 @@
       } else {
 
         if(data) {
-          addUserToDb()
+          addUserToDb();
+          // Update selectedColour store with the new background colour
+          selectedColour.set(backgroundColour);
         }
       }
       
@@ -50,6 +55,7 @@
           goto('/departureTimetable');
         }
       }
+
     } catch (error) {
       console.error('Unknown error:', (error as Error).message);
     }
@@ -80,12 +86,11 @@
   <div class="mb-4">
           <Label for="background-colour">Background Colour</Label>
           <Select id="backgroundColour" bind:value={backgroundColour}>
-            <option value="blue">Default (Blue)</option>
-            <option value="red">Red</option>
-            <option value="green">Green</option>
-            <!-- More colour options to be added -->
-        </Select>
-      </div>
+            {#each colourOptions as colourOption}
+              <option value={colourOption.value}>{colourOption.name}</option>
+            {/each}
+          </Select>
+  </div>
 
   <div class="mt-14 flex justify-center">
     <Button class="mr-1" type="submit">Submit</Button>
@@ -93,3 +98,36 @@
   </div>
 </form>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{#if backgroundColour === 'video'}
+  <!-- Display the video when the video option is selected -->
+  <div style="display: flex; justify-content: center;">
+    <iframe width="760" height="450" src={videoUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+{/if} 

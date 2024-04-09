@@ -1,4 +1,5 @@
 <script lang="ts">
+
   import {
     Button,
     Dropdown,
@@ -11,7 +12,7 @@
     TableHead,
     TableHeadCell
   } from 'flowbite-svelte';
-  
+
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import { onMount } from "svelte";
   import { Train } from "$lib/train";
@@ -21,8 +22,14 @@
   import { supabase } from '$lib/supabase.js';
   import { goto } from '$app/navigation'; // Import goto for navigation
 
+  import { writable } from 'svelte/store';
+  import{ priorStation } from '$lib/station.js'; // Import selectedStation store
+  //import { auth } from '$lib/supabase.js';
+
+
   let selected = 'Select Train Station'; // Initial button name
   let selectedStation: Trainstop | null = null;
+  export let origStationName: any;
   let trainRoute: Train[] = [];
   let stopData: Trainstop[] = [];
   let departureData: TrainDeparture[] = [];
@@ -31,43 +38,60 @@
   let  trainstation ='';
   let email='';
   
+  
+async function updateUserDetails(email: string, selectedStopName: string) {
+  console.log("updateDetails: ", selectedStopName)
+  const { data, error } = await supabase
+    .from('users')
+    .update({
+      trainstation: selectedStopName,
+  })  
+    .eq('email', email)
+    
 
-  async function updateUserDetails(users: any) {
-    const { data,  error } = await supabase
-        .from('users')
-        .update({
-            trainstation: "trainstation",
+  if (data) {
+    console.log("Data updated for user with email:", email);
+  } else {
+    console.log("No data updated for user with email:", email);
+  }
 
-        })
-        .eq('email', 'breakingbad@gmail.com') // Add a WHERE clause to specify the user ID
-        .select();
+  if (error) {
+    console.error('Error updating user details for email', email, ':', error.message);
+  } else {
+    console.log('User details updated successfully for email:', email);
+  }
+}
+
+async function selectItem(item: Trainstop) {
+  try {
+    // Get current user session
+    console.log("selectItem 1 : ", item, selectedStation, trainstation)
+    
+    const session = await supabase.auth.getSession();
+    const email: string = session.data.session?.user.email!; // Assuming email is present in user information
+    console.log("selectItem 2 :", session, email);
+
+    
+    if (session) {
+      const { data, error } = session;
+      if (data.session?.user) {
         
-
-
-    if(data) {
-        console.log("data: ", data)
+        selected = item.stop_name;
+        selectedStation = item;
+        fetchNextTrains();
+        updateUserDetails(email, item.stop_name);
+      } else {
+        console.error('No user logged in.');
+      }
     } else {
-        console.log("no data")
+      console.error('No active session.');
     }
-    if (error) {
-        console.error('Error updating user details:', error.message);
-    } else {
-        console.log('User details updated successfully.');
-
-        // Redirect to trainTimes page
-        goto('/departureTimetable');
-    }
+  } catch (error) {
+    console.error('Error during item selection:', (error as any).message);
+  }
 }
 
 
-
-
-  function selectItem(item: Trainstop) {
-    selected = item.stop_name; // Update button name
-    selectedStation = item;
-    fetchNextTrains(); // Fetch next trains when a new station is selected
-    updateUserDetails("breakingbad@gmail.com")
-  }
   
   function getFetchOptions() {
     return {
@@ -113,24 +137,28 @@
               stop.route_type
             )
         );
+        stopsToDisplay = stopData; // Update stopsToDisplay with all stops initially
       }
     });
+
   });
   
-  /* import { onMount, afterUpdate } from "svelte";
-  afterUpdate(() => {
-    if (selectedStation) {
-      localStorage.setItem('selectedStation', JSON.stringify(selectedStation));
-    }
-  }); */
   
   // Update data when selectedStation changes
   $: {
     if (selectedStation) {
+      console.log("selectedStation: ", selectedStation)
       fetchNextTrains();
     }
   }
   
+  $: {
+    if (origStationName) {
+      selectedStation = stopData.find(stop => stop.stop_name === origStationName) || null;
+      fetchNextTrains();
+    }
+  }
+
   async function fetchNextTrains() {
     try {
       if (selectedStation) {
@@ -182,39 +210,51 @@
   let stopsToDisplay = stopData;
   
   function searchStops() {
-    let results = stopData.filter(stop =>
-      stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    stopsToDisplay = results;
-    return results;
+    if (searchInput === '') {
+      stopsToDisplay = stopData; // Display all stops when search input is empty
+    } else {
+      let results = stopData.filter(stop =>
+        stop.stop_name.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      stopsToDisplay = results;
+    }
   }
   
-  function handleSubmit(event: any) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    const searchResults = searchStops();
-    stopsToDisplay = searchResults
-    if (searchResults.length === 1) {
-      selectItem(searchResults[0]);
+    searchStops();
+    if (stopsToDisplay.length === 1) {
+      selectItem(stopsToDisplay[0]);
     } else {
       // Handle multiple search results or no results
     }
   }
+
+  async function submitAndUpdateUserDetails(event: SubmitEvent) {
+  await handleSubmit(event);
+  if (selectedStation && email) {
+    updateUserDetails(email, selectedStation.stop_name);
+  }
+}
   
   </script>
   <main>
     <Button class="bg-blue-600 text-white sizes" size="lg">
-      {selected}
+<!--       change button name to prior Station and update selectedStation --> 
+      {selectedStation ? selectedStation.stop_name : selected}
+ <!--  {selected} -->
       <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
     </Button>
-  
-    <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44">
+    
+
+    <Dropdown class="overflow-y-auto px-3 pb-3 text-sm h-44" id="trainstation"> <!-- bind:value={trainstation}> -->
       <div slot="header" class="p-3">
-        <form on:submit={handleSubmit} on:submit|preventDefault={updateUserDetails} >
+        <form on:submit={submitAndUpdateUserDetails}>
           <Search size="md" bind:value={searchInput} on:keyup={searchStops} />
         </form>
       </div>
       {#each stopsToDisplay as stop (stop.stop_id)}
-        <DropdownItem on:click={() => selectItem(stop)} id="trainstation" bind:value={trainstation} >{stop.stop_name}</DropdownItem>
+        <DropdownItem on:click={() => selectItem(stop)} value={stop.stop_id}>{stop.stop_name}</DropdownItem>
       {/each}
     </Dropdown>
     
@@ -251,6 +291,4 @@
   {/if}
   </main>
   
-  <style>
-    /* Add your styles here if needed */
-  </style>
+  
